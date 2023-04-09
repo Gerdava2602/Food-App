@@ -3,15 +3,26 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 
+//Routers
+import userRouter from "./routes/user.js";
+
 dotenv.config();
 
 const app = Express();
 
-console.log(process.env.MONGODB_URI);
+// Middleware
+/* app.use(cors()); */
+app.use(Express.json());
+app.use(Express.urlencoded({ extended: true }));
+
+// Routes
+app.use("/api/users", userRouter);
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  autoIndex: true,
 })
 
 const db = mongoose.connection;
@@ -21,12 +32,8 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Bind connection to open event (to get notification of successful connection)
 db.once('open', function() {
-  console.log('MongoDB connection successful');
+console.log('MongoDB connection successful');
 });
-
-// Middleware
-app.use(cors());
-app.use(Express.json());
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
