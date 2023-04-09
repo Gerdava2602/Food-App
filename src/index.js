@@ -1,10 +1,11 @@
 import Express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import cors from "cors";
+/* import cors from "cors"; */
 
 //Routers
 import userRouter from "./routes/user.js";
+import restaurantRouter from "./routes/restaurant.js"
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(Express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/users", userRouter);
+app.use("/api/restaurants", restaurantRouter)
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
