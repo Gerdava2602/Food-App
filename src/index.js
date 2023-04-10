@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import userRouter from "./routes/user.js";
 import restaurantRouter from "./routes/restaurant.js"
 import productRouter from "./routes/product.js"
-
+import orderRouter from "./routes/order.js"
 dotenv.config();
 
 const app = Express();
@@ -21,7 +21,7 @@ app.use(Express.urlencoded({ extended: true }));
 app.use("/api/users", userRouter);
 app.use("/api/restaurants", restaurantRouter)
 app.use("/api/products", productRouter)
-
+app.use("/api/orders", orderRouter)
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,

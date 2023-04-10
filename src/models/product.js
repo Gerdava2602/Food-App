@@ -26,5 +26,6 @@ const ProductSchema = new Schema({
     }
 })
 
-ProductSchema.index({"active": 1, "restaurant":1}, {"unique": true})
+
+ProductSchema.index({"active": 1, "name":1, "restaurant":1}, {"unique": true, partialFilterExpression: { active: true } })
 export default mongoose.model('Product', ProductSchema)

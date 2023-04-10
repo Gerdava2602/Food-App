@@ -33,6 +33,6 @@ const UserSchema = new Schema({
     },
 });
 
-UserSchema.index({"active": 1, "email":1}, {"unique": true})
+UserSchema.index({"active": 1, "email":1}, {"unique": true, partialFilterExpression: { active: true } })
 
 export default mongoose.model('User', UserSchema);

@@ -21,5 +21,5 @@ const RestaurantSchema = new Schema({
     }
 })
 
-RestaurantSchema.index({"active": 1, "name":1}, {"unique": true})
+RestaurantSchema.index({"active": 1, "name":1}, {"unique": true, partialFilterExpression: { active: true } })
 export default mongoose.model('Restaurant', RestaurantSchema)
