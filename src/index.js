@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 //Routers
 import userRouter from "./routes/user.js";
 import restaurantRouter from "./routes/restaurant.js"
+import productRouter from "./routes/product.js"
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(Express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/users", userRouter);
 app.use("/api/restaurants", restaurantRouter)
+app.use("/api/products", productRouter)
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
