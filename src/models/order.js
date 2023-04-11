@@ -22,6 +22,10 @@ const OrderSchema = new Schema({
         type: String,
         required: true
     },
+    date : {
+        type: Date,
+        required: true
+    },
     deliver : {
         type: Schema.Types.ObjectId,
         ref: 'User',

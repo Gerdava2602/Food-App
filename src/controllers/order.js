@@ -4,7 +4,7 @@ import { errorResponse, successResponse } from "../response.js";
 import mongoose from "mongoose";
 
 export const createOrder = async (req, res) => {
-  const { restaurant, customer, products } = req.body;
+  const { restaurant, customer, products, date } = req.body;
   try {
     // Check if all products are from the same restaurant
     let all = false;
@@ -27,6 +27,7 @@ export const createOrder = async (req, res) => {
       restaurant,
       customer,
       products,
+      date,
       status: "Creado",
       active: true,
     });
@@ -98,6 +99,7 @@ export const getNotAcceptedOrders = async (req, res) => {
           products: 1,
           status: 1,
           deliver: 1,
+          date: 1,
         },
       },
     ]);
@@ -134,7 +136,7 @@ export const acceptOrder = async (req, res) => {
 
 export const updateOrder = async (req, res) => {
   const { id } = req.params;
-  const { status, restaurant, products } = req.body;
+  const { status, restaurant, products, date } = req.body;
   try {
     const order = await Order.findOne({ _id: id, active: true });
     if (order) {
@@ -147,7 +149,7 @@ export const updateOrder = async (req, res) => {
 
     const new_order = await Order.findOneAndUpdate(
       { _id: id, active: true },
-      { status, restaurant, products },
+      { status, restaurant, products, date },
       { new: true }
     );
 

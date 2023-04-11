@@ -9,7 +9,7 @@ export const createRestaurant = async (req, res) => {
       category,
       address,
       name,
-      active: true
+      active: true,
     });
     return successResponse(
       req,
@@ -23,27 +23,71 @@ export const createRestaurant = async (req, res) => {
 };
 
 export const getRestaurant = async (req, res) => {
-    const {id} = req.params
+  const { id } = req.params;
 
-    try {
-        const restaurant = await Restaurant.findOne({"_id": id, "active": true})
-        if(!restaurant) {
-            return errorResponse(req, res, "Restaurant not found", 404)
-        }
-        return successResponse(req, res, restaurant, "Restaurant Found")
-    } catch (error) {
-        return errorResponse(req, res, error.message, error.statusCode)
+  try {
+    const restaurant = await Restaurant.findOne({ _id: id, active: true });
+    if (!restaurant) {
+      return errorResponse(req, res, "Restaurant not found", 404);
     }
+    return successResponse(req, res, restaurant, "Restaurant Found");
+  } catch (error) {
+    return errorResponse(req, res, error.message, error.statusCode);
+  }
 };
 
-/* export const getRestaurants = async (req, res) => {
-    const {categories, name} = req.query
-    try {
-        const restaurants = Restaurant.aggregate()
-    } catch (error) {
-        
-    }
-} */
+export const getRestaurants = async (req, res) => {
+  const { categories, name } = req.query;
+  try {
+    const restaurants = await Restaurant.aggregate([
+      {
+        $match: {
+          active: true,
+          ...(categories && { category: { $in: categories } }),
+          ...(name && { name: { $regex: name, $options: "i" } }),
+        },
+      },
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "restaurant",
+          as: "orders",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          category: 1,
+          address: 1,
+          popularity: {
+            $size: {
+              $filter: {
+                input: "$orders",
+                as: "order",
+                cond: {
+                  $and: [
+                    { $eq: ["$$order.active", true] },
+                    { $ne: ["$$order.status", "Creado"] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          popularity: -1,
+        },
+      },
+    ]);
+    return successResponse(req, res, restaurants);
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};
 
 export const updateRestaurant = async (req, res) => {
   const { id } = req.params;
@@ -55,7 +99,7 @@ export const updateRestaurant = async (req, res) => {
       {
         category,
         address,
-        name
+        name,
       },
       { new: true }
     );
@@ -84,4 +128,4 @@ export const deleteRestaurant = async (req, res) => {
   } catch (error) {
     return errorResponse(req, res, error.message, error.statusCode);
   }
-}
+};
