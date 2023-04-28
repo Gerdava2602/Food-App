@@ -100,8 +100,21 @@ export const getNotAcceptedOrders = async (req, res) => {
           status: 1,
           deliver: 1,
           date: 1,
+          userDistance: {
+            $rand: {},
+          },
+          clientDistance: {
+            $rand: {},
+          }
         },
       },
+      {
+        $sort: {
+          userDistance: -1,
+          clientDistance: -1,
+          date: -1
+        }
+      }
     ]);
     if (!orders) {
       return errorResponse(req, res, "Orders not found", 404);
