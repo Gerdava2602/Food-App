@@ -51,17 +51,21 @@ export const getOrder = async (req, res) => {
   }
 };
 
-export const getUserOrders = async (req, res) => {
-  const { userid } = req.params;
+export const getOrders = async (req, res) => {
+  const { user, deliver, restaurant, start_date, end_date } = req.query;
   try {
     const orders = await Order.aggregate([
       {
         $match: {
           active: true,
-          $or: [
-            { customer: new mongoose.Types.ObjectId(userid) },
-            { deliver: new mongoose.Types.ObjectId(userid) },
-          ],
+          ...(user && { customer: new mongoose.Types.ObjectId(user) }),
+          ...(deliver && { deliver: new mongoose.Types.ObjectId(deliver) }),
+          ...(restaurant && {
+            restaurant: new mongoose.Types.ObjectId(restaurant),
+          }),
+          ...((start_date && end_date) && {
+            date: { $gte: new Date(start_date), $lte: new Date(end_date) },
+          }),
         },
       },
       {
@@ -71,6 +75,7 @@ export const getUserOrders = async (req, res) => {
           products: 1,
           status: 1,
           deliver: 1,
+          date: 1,
         },
       },
     ]);
@@ -82,6 +87,37 @@ export const getUserOrders = async (req, res) => {
     return errorResponse(req, res, error.message, 500);
   }
 };
+
+export const getInProgressOrders = async (req, res) => {
+  const { restaurant } = req.query;
+  try {
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          active: true,
+          status: { $nin: ["Creado", "Realizado"] },
+          ...(restaurant && {
+            restaurant: new mongoose.Types.ObjectId(restaurant),
+          }),
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          restaurant: 1,
+          products: 1,
+          status: 1,
+          deliver: 1,
+          date: 1,
+        },
+      },
+    ]);
+    return successResponse(req, res, orders, 200);
+  } catch (error) {
+    return errorResponse(req, res, error.message, 500);
+  }
+};
+
 
 export const getNotAcceptedOrders = async (req, res) => {
   try {
@@ -100,6 +136,7 @@ export const getNotAcceptedOrders = async (req, res) => {
           status: 1,
           deliver: 1,
           date: 1,
+          customer: 1,
           userDistance: {
             $rand: {},
           },

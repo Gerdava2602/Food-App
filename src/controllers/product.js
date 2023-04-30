@@ -36,7 +36,6 @@ export const getProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   const { category, restaurant } = req.query;
-  console.log(category, restaurant);
   try {
     const Products = await Product.aggregate([
       {

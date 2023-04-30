@@ -1,12 +1,23 @@
 import { Router } from "express";
-import { createOrder, deleteOrder, getNotAcceptedOrders, getOrder, getUserOrders, updateOrder } from "../controllers/order.js";
+import {
+  acceptOrder,
+  createOrder,
+  deleteOrder,
+  getInProgressOrders,
+  getNotAcceptedOrders,
+  getOrder,
+  getOrders,
+  updateOrder,
+} from "../controllers/order.js";
 
 const router = Router();
 
 router.post("/", createOrder);
-router.get('/notAccepted', getNotAcceptedOrders)
+router.post("/:id", acceptOrder);
+router.get("/notAccepted", getNotAcceptedOrders);
+router.get("/in-progress", getInProgressOrders);
 router.get("/:id", getOrder);
-router.get("/user/:userid", getUserOrders);
+router.get("/", getOrders);
 router.put("/:id", updateOrder);
 router.delete("/:id", deleteOrder);
 
